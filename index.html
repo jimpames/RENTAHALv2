@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        #audioWaveform {
+            transition: opacity 0.3s ease-in-out;
+        }
+    
+        #audioWaveform.opacity-0 {
+            opacity: 0;
+        }
+    
+        #audioWaveform.opacity-100 {
+            opacity: 1;
+        }
+    </style>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OnPrem, Secure AI - NineThousand</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <!-- Audio visualization -->
+    <canvas id="audioWaveform" class="fixed bottom-0 left-0 w-full h-16" style="display: none;"></canvas>
+
+    <div class="container mx-auto p-4">
+        <!-- Header Section -->
+        <header class="bg-green-600 text-white p-4 rounded-t-lg">
+            <h1 class="text-2xl font-bold">OnPrem, Secure AI</h1>
+            <h2 class="text font-bold">NineThousand</h2>
+            <h2 class="text font-bold">Multi-Tronic Operating Realm</h2>
+            <h2 class="text font-bold">BETAFIVE:3-node/7b-array:v6.000 BETA -modular event driven asynchronus code.3JAN2025</h2>
+			<h2 class="text font-bold">FEATUREKEY_Array_AI_API_capabilities_local: Llama3 * Llava * Stable Diffusion * Bark * Whisper * TTS * STT * chat * vision * imagine</h2>
+			<h2 class="text font-bold">FEATUREKEY_Array_AI_orchestrator_capabilities_local: unlimited AI worker nodes; AI worker SYSOP management/AI worker health-monitoring; wake word mode </h2>
+			<h2 class="text font-bold">publicdemo:notcloudai.com - Delivering the Future to the Present™</h2>
+			<h2 class="text font-bold">note: for CHAT - set 'Worker Node' to '2070sLABCHAT'</h2>
+			<h2 class="text font-bold">* WAKE WORD * mode OFFLINE 3 Jan 25(is: COMPUTER) MODES: chrome/only! [use F5 *BEFORE* pressing ENABLE WAKE - EACH TIME!]:</h2>
+            <h2 class="text font-bold">CHAT / VISION / IMAGINE / WEATHER / GMAIL / MUSIC / SMART HOME - say COMPUTER to submit chat (GO submits IMAGINE) or BACKSPACE to erase prompt)</h2>
+            <div id="user-info" class="mt-2 text-sm"></div>
+            <div id="connection-status" class="mt-2 text-sm"></div>
+        </header>
+
+        <!-- Gmail Auth Prompt -->
+        <div id="gmailAuthPrompt" style="display: none; background-color: yellow; padding: 10px; margin: 10px 0;">
+            Please check your browser windows for a Google authorization prompt.
+            Complete the authorization process, then say "retry Gmail" to continue.
+        </div>
+
+        <main class="bg-white p-4 rounded-b-lg shadow">
+            <!-- Nickname Section -->
+            <section id="nickname-section" class="section mb-6">
+                <h8 class="text font-semibold mb-2">
+                    Set Your NICKname below 
+                </h8>
+                <div class="flex items-center space-x-2">
+                    <input type="text" id="nickname-input" class="border p-2 rounded flex-1" placeholder="Enter nickname">
+                    <button id="set-nickname" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                        Set Nickname
+                    </button>
+                </div>
+            </section>
+
+            <!-- Query Section -->
+            <section id="query-section" class="section mb-6">
+                <h2 class="text-xl font-semibold mb-2">Submit a Query</h2>
+                <div class="flex flex-col space-y-2">
+                    <!-- Query Type Selection -->
+                    <select id="query-type" class="border p-2 rounded">
+                        <option value="chat">Chat</option>
+                        <option value="vision">Vision</option>
+                        <option value="imagine">Imagine</option>
+                        <option value="speech">Speech</option>
+                    </select>
+
+                    <!-- Model Type Selection -->
+                    <select id="model-type" class="border p-2 rounded">
+                        <option value="worker_node">Worker Node</option>
+                        <option value="huggingface">Hugging Face</option>
+                        <option value="claude">Claude</option>
+                    </select>
+
+                    <!-- Model Selection -->
+                    <select id="model-select" class="border p-2 rounded">
+                    </select>
+
+                    <!-- Image Upload Area -->
+                    <div id="image-drop-zone" class="border-dashed border-2 border-gray-300 p-4 text-center hidden">
+                        Drag and drop an image here or click to select
+                    </div>
+                    <input type="file" id="image-upload" class="hidden" accept="image/*">
+                    <div id="image-preview" class="hidden">
+                        <img id="preview-img" class="max-w-full h-auto">
+                    </div>
+
+                    <!-- Prompt Input -->
+                    <textarea 
+                        id="prompt-input" 
+                        class="border p-2 rounded resize-none"
+                        rows="3"
+                        placeholder="Enter your prompt"
+                    ></textarea>
+
+                    <!-- Control Buttons -->
+                    <div class="flex space-x-2">
+                        <button 
+                            id="submit-query" 
+                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                        >
+                            Submit Query
+                        </button>
+                        <button 
+                            id="voice-input-button" 
+                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                        >
+                            Start Voice Input
+                        </button>
+                        <button 
+                            id="toggle-wake-word" 
+                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                        >
+                            Enable Wake Word Mode
+                        </button>
+                    </div>
+
+                    <!-- Speech Output Toggle -->
+                    <div class="flex items-center">
+                        <input type="checkbox" id="speech-output-checkbox" class="mr-2">
+                        <label for="speech-output-checkbox">Enable Speech Output</label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section id="results-section" class="section mb-6">
+                <h2 class="text-xl font-semibold mb-2">Results</h2>
+                <div id="results" class="border p-4 rounded min-h-20 bg-gray-50"></div>
+                <button 
+                    id="clear-results" 
+                    class="mt-2 bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+                >
+                    Clear Results
+                </button>
+            </section>
+
+            <!-- Queue Information -->
+            <section id="queue-info" class="section mb-6">
+                <h2 class="text-xl font-semibold mb-2">Queue Information</h2>
+                <div class="bg-gray-200 rounded-full h-4 overflow-hidden">
+                    <div 
+                        id="queue-thermometer" 
+                        class="bg-blue-500 h-full text-xs leading-none py-1 text-center text-white"
+                        style="width: 0%"
+                    ></div>
+                </div>
+            </section>
+
+            <!-- Cumulative Costs -->
+            <section id="cumulative-costs-section" class="section mb-6">
+                <h2 class="text-xl font-semibold mb-2">Cumulative Costs</h2>
+                <div id="cumulative-costs"></div>
+            </section>
+
+            <!-- Previous Queries -->
+            <section id="previous-queries-section" class="section mb-6">
+                <h2 class="text-xl font-semibold mb-2">Previous Queries</h2>
+                <div id="previous-queries"></div>
+            </section>
+
+            <!-- Sysop Panel -->
+            <section id="sysop-panel" class="section hidden">
+                <h2 class="text-2xl font-bold mb-4">Sysop Panel</h2>
+
+                <!-- System Statistics -->
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-2">System Statistics</h3>
+                    <div id="system-stats"></div>
+                </div>
+
+                <!-- Manage AI Workers -->
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-2">Manage AI Workers</h3>
+                    <div id="worker-list" class="mb-4"></div>
+                    <form id="add-worker-form" class="space-y-2">
+                        <input type="text" id="worker-name" class="border p-2 rounded" placeholder="Worker Name">
+                        <input type="text" id="worker-address" class="border p-2 rounded" placeholder="Worker Address">
+                        <select id="worker-type" class="border p-2 rounded">
+                            <option value="chat">Chat</option>
+                            <option value="vision">Vision</option>
+                            <option value="imagine">Imagine</option>
+                        </select>
+                        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                            Add Worker
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Manage Hugging Face Models -->
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-2">Manage Hugging Face Models</h3>
+                    <div id="huggingface-model-list" class="mb-4"></div>
+                    <form id="add-huggingface-model-form" class="space-y-2">
+                        <input type="text" id="huggingface-model-name" class="border p-2 rounded" placeholder="Model Name">
+                        <select id="huggingface-model-type" class="border p-2 rounded">
+                            <option value="chat">Chat</option>
+                            <option value="vision">Vision</option>
+                            <option value="imagine">Imagine</option>
+                        </select>
+                        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                            Add Hugging Face Model
+                        </button>
+                    </form>
+                </div>
+
+                <!-- User Management -->
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-2">User Management</h3>
+                    <div id="user-list"></div>
+                </div>
+
+                <!-- Worker Health -->
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-2">Worker Health</h3>
+                    <div id="worker-health"></div>
+                </div>
+
+                <!-- Active Users -->
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-2">Active Users</h3>
+                    <table class="w-full">
+                        <thead>
+                            <tr>
+                                <th class="text-left">User</th>
+                                <th class="text-left">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="active-users-table"></tbody>
+                    </table>
+                </div>
+
+                <!-- Sysop Message -->
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-2">Sysop Message</h3>
+                    <div class="flex space-x-2">
+                        <input 
+                            type="text" 
+                            id="sysop-message-input" 
+                            class="border p-2 rounded flex-grow" 
+                            placeholder="Enter message"
+                        >
+                        <button 
+                            id="send-sysop-message" 
+                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                        >
+                            Send Message
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Google API Scripts -->
+    <script async defer src="https://apis.google.com/js/api.js" onload="window.gapiLoaded()"></script>
+    <script async defer src="https://accounts.google.com/gsi/client" onload="window.gisLoaded()"></script>
+
+    <!-- Application Scripts -->
+    <script type="module">
+        import { RentAHalApp } from '/static/js/app.js';
+        
+        // Initialize the application when the DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            window.rentAHal = new RentAHalApp();
+        });
+        
+        // Make gapi handlers available globally
+        window.gapiLoaded = () => window.rentAHal?.gmail.gapiLoaded();
+        window.gisLoaded = () => window.rentAHal?.gmail.gisLoaded();
+    </script>
+</body>
+</html>
