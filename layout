@@ -1,0 +1,16 @@
+rentahal\webgui.py
+rentahal\main.py
+rentahal\run_rah.bat
+rentahal\templates\index.html
+rentahal\static\oauth-callback.html
+rentahal\static\js\app.js
+rentahal\static\js\components\weatherdisplay.jsx
+rentahal\static\js\config\config.js
+rentahal\static\js\managers\visionmanager.js
+rentahal\static\js\managers\speechmanager.js
+rentahal\static\js\managers\uimanager.js
+rentahal\static\js\managers\websocketmanager.js
+rentahal\static\js\managers\weathermanager.js
+rentahal\static\js\managers\gmailmanager.js
+rentahal\static\js\services\storageservice.js
+rentahal\static\js\utils\helper.js
